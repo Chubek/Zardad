@@ -3,69 +3,83 @@ summer-program ::= { variable-declaration
                     | procedure-declaration 
                     | operator-declaration 
                     | class-declaration 
-                    | operator-symbol-declaration }*
+                    | operator-symbol-declaration } .
 
-program-declaration ::= PROGRAM identifier '(' [identifier] ')' [expression] ';'
+program-declaration ::= "program" identifier '(' [identifier] ')' [expression] ';' .
 
-operator-symbol-declaration ::= (MONADIC | DYADIC) { operator-symbol ',' }+ ';'
+operator-symbol-declaration ::= ("monadic" | "dyadic") (  operator-symbol { ',' operator-symbol } ) ';' .
 
-class-declaration ::= CLASS identifier formals
-BEGIN 
-    subclass-declaration 
-    fetch-associations 
-    store-associations 
-    ( variable-declaration 
+class-declaration ::= "class" identifier formals
+"begin" 
+    [ subclass-declaration ]
+    [ fetch-associations ]
+    [ store-associations ]
+    { ( variable-declaration 
     | constant-declaration 
     | procedure-declaration 
-    | operator-declaration )*
-    [INIT ':' block] 
-END identifier ';'
+    | operator-declaration ) }
+    ["init" ':' block] 
+"end" identifier ';' .
 
-subclass-declaration ::= [SUBCLASS OF identifier ';']
+subclass-declaration ::= "subclass" "of" identifier ';' .
 
-fetch-associations ::= [FETCH associations ';']
+fetch-associations ::= "fetch" associations ';' .
 
-store-associations ::= [STORE associations ';']
+store-associations ::= "store" associations ';' .
 
-associations ::= { association ',' }+
+associations ::=  association { ',' association } .
 
-association ::= field-identifier [ ':' identifier ]
+association ::= field-identifier [ ':' identifier ] .
 
-field-identifier ::= identifier | operator-symbol
+field-identifier ::= identifier | operator-symbol .
 
-procedure-declaration ::= PROC identifier formals [| expression] ';'
+procedure-declaration ::= "proc" identifier formals [ expression] ';' .
 
-operator-declaration ::= OP operator-symbol formals [expression] ';'
+operator-declaration ::= "op" operator-symbol formals [expression] ';' .
 
-variable-declaration ::= VAR { variable-initialization ',' }+ ';'
+variable-declaration ::= "var"  ( variable-initialization { ',' variable-initialization }  ';' .
 
-variable-initialization ::= identifier [':=' expression]
+variable-initialization ::= identifier [':=' expression] .
 
-constant-declaration ::= CONST { constant-initialization ',' }+ ';'
+constant-declaration ::= "const" ( constant-initialization { ',' constant-initialization } ) ';' .
 
-constant-initialization ::= identifier ':=' constant-expression
+constant-initialization ::= identifier ':=' constant-expression .
 
-formals ::= '(' { identifier ',' }*)'
+formals ::= '('  identifier { ',' identifier } )' .
 
-constant ::= string-constant | integer-constant | real-constant
+constant ::= string-constant | integer-constant | real-constant .
 
-constant-operator ::= '+' | '-' | '*' | '/' | '%' | '**' | '|||'
+constant-operator ::= '+' | '-' | '*' | '/' | '%' | '**' | '|||' .
 
-constant-expression ::= simple-constant-expression (constant-operator constant-expression)*
+constant-expression ::= simple-constant-expression { (constant-operator constant-expression) } .
 
-simple-constant-expression ::= constant | identifier | '(' constant-expression ')' | '.' simple-constant-expression
+simple-constant-expression ::= constant | identifier | '(' constant-expression ')' | '.' simple-constant-expression .
 
-expression ::= dyadic-expression
+expression ::= dyadic-expression .
 
-monadic-expression ::= (monadic-operator)* primary
+monadic-expression ::= { monadic-operator } primary .
 
-monadic-operator ::= '~' | '-' | operator-symbol
+monadic-operator ::= '~' | '-' | operator-symbol .
 
-dyadic-operator ::= '**' | '+' | '-' | '*' | '/' | '%' | '|||' | '|<' | '<=?' | '>' | '>=!' | '!=' | '&' | ')' | operator-symbol
+dyadic-operator ::= '**' 
+                 | '+' 
+		 | '-' 
+		 | '*' 
+		 | '/' 
+		 | '%' 
+		 | '|||' 
+		 | '|<' 
+		 | '<=?' 
+		 | '>' 
+		 | '>=!' 
+		 | '!=' 
+		 | '&' 
+		 | ')' 
+		 | operator-symbol .
 
-dyadic-expression ::= monadic-expression (dyadic-operator monadic-expression)*
+dyadic-expression ::= monadic-expression { (dyadic-operator monadic-expression) } .
 
-primary ::= unit (subscript | select)
+primary ::= unit (subscript | select) .
 
 unit ::= constant 
         | identifier-or-call 
@@ -79,50 +93,50 @@ unit ::= constant
         | assert-expression 
         | parenthesized-expression 
         | array-expression 
-        | table-expression
+        | table-expression .
 
-identifier-or-call ::= identifier [actuals]
+identifier-or-call ::= identifier [actuals] .
 
-actuals ::= '(' { expression ',' }*)'
+actuals ::= '('  expression { ',' expression } ')' .
 
-subscript ::= '/' expression ']'
+subscript ::= '/' expression ']' .
 
-select ::= '.' identifier [| actuals]
+select ::= '.' identifier [ actuals] .
 
-return-expression ::= FRETURN | RETURN ['(' expression ')']
+return-expression ::= "freturn" | "return" ['(' expression ')'] .
 
-while-expression ::= WHILE test DO block OD
+while-expression ::= "while" test "do" block "od" .
 
-try-expression ::= TRY { expression ',' }+ [UNTIL block] YRT
+try-expression ::= "try" ( expression { ',' expression } ) ["until" block] "yrt" .
 
-scan-expression ::= SCAN expression FOR block ROF
+scan-expression ::= "scan" expression "for" block "rof" .
 
-for-expression ::= FOR identifier IN expression DO block OD
+for-expression ::= "for" identifier "in" expression "do" block "od" .
 
-case-expression ::= CASE expression OF { case-entry ',' }* [DEFAULT ':' block] ESAC
+case-expression ::= "case" expression "of" ( case-entry { ',' case-entry } ) ["default" ':' block] "esac" .
 
-case-entry ::= { constant-expression ':' }+ block
+case-entry ::= (  constant-expression { ':' constant-expression } ) block .
 
-assert-expression ::= ASSERT expression
+assert-expression ::= "assert" expression .
 
-if-expression ::= IF test THEN block (ELIF test THEN block)+ [ELSE block] FI
+if-expression ::= "if" test "then" block { "elif" test "then" block } ["else" block] FI .
 
-test ::= expression [FAILS | SUCCEEDS]
+test ::= expression ["fails" | "succeeds"] .
 
-parenthesized-expression ::= '(' block ')'
+parenthesized-expression ::= '(' block ')' .
 
-block ::= (variable-declaration | constant-declaration)* {[expression] ';'}*
+block ::= { ( variable-declaration | constant-declaration ) } ( [ expression  { ';' expression } ] ) .
 
-array-expression ::= ARRAY size-and-default [| INIT array-initialization } | array-initialization
+array-expression ::= "array" size-and-default | { "init" array-initialization } | array-initialization .
 
-size-and-default ::= '(' expression ',' expression ')'
+size-and-default ::= '(' expression ',' expression ')' .
 
-array-initialization ::= '[' { expression ',' }* ']'
+array-initialization ::= '['  expression { ',' expression }  ']' .
 
-table-expression ::= TABLE size-and-default [INIT table-initialization ] 
-                | table-initialization
+table-expression ::= "table" size-and-default ["init" table-initialization ] 
+                | table-initialization .
 
-table-initialization ::= '[' { table-element ',' }* ']'
+table-initialization ::= '[' (  table-element { ',' table-element }  ) ']' .
 
-table-element ::= {expression ':'}+ ':' expression
+table-element ::= expression { ':' expression } .
 
